@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: lab_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: ${TZ}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - lab_net
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:latest
+    container_name: lab_zabbix_server
+    environment:
+      DB_SERVER_HOST: ${ZBX_DB_HOST}
+      POSTGRES_DB: ${ZBX_DB_NAME}
+      POSTGRES_USER: ${ZBX_DB_USER}
+      POSTGRES_PASSWORD: ${ZBX_DB_PASSWORD}
+      ZBX_TIMEOUT: 4
+      TZ: ${TZ}
+    depends_on:
+      - postgres
+    ports:
+      - "10051:10051"
+    restart: always
+    networks:
+      - lab_net
+
+  zabbix-agent:
+    image: zabbix/zabbix-agent:latest
+    container_name: lab_zabbix_agent
+    environment:
+      ZBX_SERVER_HOST: lab_zabbix_server
+      ZBX_HOSTNAME: docker-host
+      TZ: ${TZ}
+    depends_on:
+      - zabbix-server
+    restart: always
+    networks:
+      - lab_net
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:latest
+    container_name: lab_zabbix_web
+    environment:
+      DB_SERVER_HOST: ${ZBX_DB_HOST}
+      POSTGRES_DB: ${ZBX_DB_NAME}
+      POSTGRES_USER: ${ZBX_DB_USER}
+      POSTGRES_PASSWORD: ${ZBX_DB_PASSWORD}
+      ZBX_SERVER_HOST: lab_zabbix_server
+      PHP_TZ: ${TZ}
+    depends_on:
+      - postgres
+      - zabbix-server
+    ports:
+      - "8081:8080"
+    restart: always
+    networks:
+      - lab_net
+
+  nginx:
+    image: nginx:alpine
+    container_name: lab_nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - nginx_data:/usr/share/nginx/html
+    restart: always
+    networks:
+      - lab_net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: lab_grafana
+    ports:
+      - "3000:3000"
+    environment:
+     - GF_SECURITY_ADMIN_USER=admin
+     - GF_SECURITY_ADMIN_PASSWORD=admin
+     - GF_USERS_ALLOW_SIGN_UP=false
+     - TZ=America/Sao_Paulo
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - zabbix-server
+    restart: always
+    networks:
+      - lab_net
+
+volumes:
+  nginx_data:
+  postgres_data:
+  grafana_data:
+
+networks:
+  lab_net:
+    driver: bridge

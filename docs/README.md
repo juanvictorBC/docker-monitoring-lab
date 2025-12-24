@@ -11,6 +11,6 @@ LAB de estudos focado em boas práticas de Docker, Docker Compose e ambientes Re
 docker compose -f compose/docker-compose.yml up -d
 
 ## Acessos
-Zabbix: http://IP:8080
-Grafana: http://IP:3000
+- Zabbix: http://IP:8080
+- Grafana: http://IP:3000
 

@@ -10,7 +10,7 @@ LAB de estudos focado em boas práticas de Docker, Docker Compose e ambientes Re
 ## Como subir
 docker compose -f compose/docker-compose.yml up -d
 
-##Acessos
+## Acessos
 Zabbix: http://IP:8080
 Grafana: http://IP:3000
 

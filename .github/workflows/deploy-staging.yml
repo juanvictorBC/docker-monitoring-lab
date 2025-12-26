@@ -1,0 +1,20 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Simulate deploy
+        run: |
+          echo "Deploying to ${{ secrets.DEPLOY_HOST }}"
+          echo "Path: ${{ secrets.DEPLOY_PATH }}"
+          echo "This is a controlled deploy simulation"

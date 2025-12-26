@@ -1,0 +1,8 @@
+services:
+  zabbix-server:
+    environment:
+      ZBX_LOGLEVEL: 4
+
+  grafana:
+    environment:
+      GF_LOG_LEVEL: debug

@@ -14,3 +14,10 @@ docker compose -f compose/docker-compose.yml up -d
 Zabbix: http://IP:8080
 Grafana: http://IP:3000
 
+## Environment variables
+
+Copy the example file and adjust values:
+
+```bash
+cp compose/.env.example compose/.env
+
